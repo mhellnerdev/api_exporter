@@ -2,7 +2,7 @@
 set -e
 
 # Constants
-GITHUB_URL="https://github.com/yourusername/api_exporter/releases/latest/download/api_exporter"
+GITHUB_URL="https://github.com/mhellnerdev/api_exporter/releases/download/latest/api_exporter_linux_amd64.tar.gz"
 INSTALL_DIR="/usr/local/bin"
 SERVICE_FILE="/etc/systemd/system/api_exporter.service"
 
