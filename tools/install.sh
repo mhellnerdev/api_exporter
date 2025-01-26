@@ -2,7 +2,7 @@
 set -e
 
 # Constants
-GITHUB_URL="https://github.com/mhellnerdev/api_exporter/releases/download/latest/api_exporter_linux_amd64.tar.gz"
+GITHUB_URL="https://github.com/yourusername/api_exporter/releases/latest/download/api_exporter"
 INSTALL_DIR="/usr/local/bin"
 SERVICE_FILE="/etc/systemd/system/api_exporter.service"
 USER_NAME="api_exporter"
@@ -19,8 +19,18 @@ fatal() {
 # --- check if user exists ---
 check_user_exists() {
     if id "$USER_NAME" &>/dev/null; then
-        info "User '$USER_NAME' already exists. Skipping installation."
-        exit 0
+        info "User '$USER_NAME' already exists. Skipping user creation."
+        return 0
+    else
+        return 1
+    fi
+}
+
+# --- create user if it does not exist ---
+create_user() {
+    if ! check_user_exists; then
+        info "Creating user $USER_NAME..."
+        useradd -r -s /bin/false "$USER_NAME" || fatal "Failed to create user $USER_NAME"
     fi
 }
 
@@ -47,7 +57,7 @@ After=network.target
 [Service]
 ExecStart=$INSTALL_DIR/api_exporter --config.api-config=/etc/api_exporter/api_config.yml
 Restart=always
-User=nobody
+User=$USER_NAME
 
 [Install]
 WantedBy=multi-user.target
@@ -64,7 +74,7 @@ enable_and_start_service() {
 
 # --- main installation process ---
 {
-    check_user_exists
+    create_user
     download_binary
     install_binary
     create_service_file
