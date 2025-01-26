@@ -156,3 +156,13 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 - [Prometheus](https://prometheus.io/) for monitoring and alerting.
 - [Go](https://golang.org/) for the programming language.
+
+## Uninstallation
+
+To uninstall the API Exporter, run the following command from the root of the cloned repository:
+
+```bash
+sudo ./uninstall.sh
+```
+
+This will remove the API Exporter binary, configuration files, systemd service, and the `api_exporter` user.
