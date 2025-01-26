@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Variables
@@ -12,21 +12,21 @@ ARCH=$(uname -m)                   # Get the architecture
 USER_NAME="api_exporter"           # User to run the service
 
 # Create a user for the API Exporter if it doesn't exist
-if ! id "$USER_NAME" >/dev/null 2>&1; then
+if ! id "$USER_NAME" &>/dev/null; then
     echo "Creating user $USER_NAME..."
     sudo useradd -r -s /bin/false "$USER_NAME"
 fi
 
 # Determine the appropriate asset name based on OS and architecture
-if [ "$OS" = "linux" ]; then
-    if [ "$ARCH" = "x86_64" ]; then
+if [[ "$OS" == "linux" ]]; then
+    if [[ "$ARCH" == "x86_64" ]]; then
         ASSET_NAME="api_exporter_linux_amd64.tar.gz"
     else
         echo "Unsupported architecture: $ARCH"
         exit 1
     fi
-elif [ "$OS" = "darwin" ]; then
-    if [ "$ARCH" = "x86_64" ]; then
+elif [[ "$OS" == "darwin" ]]; then
+    if [[ "$ARCH" == "x86_64" ]]; then
         ASSET_NAME="api_exporter_darwin_amd64.tar.gz"
     else
         echo "Unsupported architecture: $ARCH"
@@ -41,7 +41,7 @@ fi
 RESPONSE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
 
 # Check if the response is empty
-if [ -z "$RESPONSE" ]; then
+if [[ -z "$RESPONSE" ]]; then
     echo "Failed to fetch the latest release. Please check the repository and your network connection."
     exit 1
 fi
@@ -50,7 +50,7 @@ fi
 LATEST_RELEASE=$(echo "$RESPONSE" | jq -r ".assets[] | select(.name | contains(\"$ASSET_NAME\")) | .browser_download_url")
 
 # Check if the URL was found
-if [ -z "$LATEST_RELEASE" ]; then
+if [[ -z "$LATEST_RELEASE" ]]; then
     echo "Could not find the latest release for $ASSET_NAME"
     exit 1
 fi
