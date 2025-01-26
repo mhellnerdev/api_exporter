@@ -1,6 +1,22 @@
-# API Exporter
+# Prometheus API Exporter
 
-API Exporter is a simple Go application that measures the response time of specified API endpoints and exposes the metrics in a format compatible with Prometheus. It supports API key authentication through configurable headers.
+API Exporter is a Go application designed to monitor the response times of API endpoints. Built using the Prometheus exporter toolkit, it provides metrics in a format that Prometheus can easily consume. The application also allows for API key authentication through customizable headers, ensuring secure access to your APIs.
+
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Download](#download)
+- [Installation](#installation)
+  - [Automatic Installation](#automatic-installation)
+  - [Manual Installation](#manual-installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Prometheus Configuration](#prometheus-configuration)
+- [License](#license)
+- [Contributing](#contributing)
+- [Acknowledgments](#acknowledgments)
+- [Uninstallation](#uninstallation)
 
 ## Features
 
@@ -15,9 +31,11 @@ API Exporter is a simple Go application that measures the response time of speci
 
 ## Download
 
-You can download the latest release of API Exporter from the [Releases page](https://github.com/yourusername/api_exporter/releases).
+You can download the latest release of API Exporter from the [Releases page](https://github.com/mhellnerdev/api_exporter/releases).
 
-### Installation
+## Installation
+
+### Automatic Installation
 
 1. **Clone the Repository**:
    ```bash
@@ -30,31 +48,75 @@ You can download the latest release of API Exporter from the [Releases page](htt
    sudo ./install.sh
    ```
 
-This will install the API Exporter from the pre-built release, set up the configuration, and start it as a systemd service.
+This will perform the following actions:
+- Create a user named `api_exporter` to run the service.
+- Create the installation directory at `/etc/api_exporter`.
+- Unpack the release tar.gz file into a temporary directory.
+- Move the binary to the installation directory.
+- Create a default configuration file at `/etc/api_exporter/api_config.yml`.
+- Set ownership of the installation directory and configuration file to the `api_exporter` user.
+- Create a systemd service file to manage the API Exporter as a service.
+- Reload systemd to recognize the new service.
+- Enable and start the API Exporter service.
 
-## Build and Install
+### Manual Installation
 
-1. **Clone the repository**:
+If you prefer to install manually, follow these steps:
 
+1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/api_exporter.git
+   git clone https://github.com/mhellnerdev/api_exporter.git
    cd api_exporter
    ```
 
-2. **Build the application**:
-
+2. **Build the Binary**:
    ```bash
    go build -o api_exporter
    ```
 
-3. **Install dependencies**:
-
-   Make sure to install the required dependencies:
-
+3. **Move the Binary**:
    ```bash
-   go get gopkg.in/yaml.v2
-   go get github.com/prometheus/client_golang/prometheus
-   go get github.com/prometheus/client_golang/prometheus/promhttp
+   sudo mv api_exporter /usr/local/bin/
+   ```
+
+4. **Create the Configuration File**:
+   Create a YAML configuration file (e.g., `api_config.yml`) to specify the API keys and headers for the endpoints you want to monitor. The structure of the YAML file should be as follows:
+   ```yaml
+   api_keys:
+     "https://api.example.com":
+       key: "your_api_key"
+       header: "x-api-key"
+     "https://another.api.com":
+       key: "another_api_key"
+       header: "x-api-key"
+   ```
+
+5. **Create the Systemd Service File**:
+   Create a systemd service file at `/etc/systemd/system/api_exporter.service` with the following content:
+   ```ini
+   [Unit]
+   Description=API Exporter
+   After=network.target
+
+   [Service]
+   ExecStart=/usr/local/bin/api_exporter --config.api-config=/path/to/api_config.yml
+   Restart=always
+   User=api_exporter
+   Group=api_exporter
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+6. **Reload Systemd**:
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+7. **Enable and Start the Service**:
+   ```bash
+   sudo systemctl enable api_exporter
+   sudo systemctl start api_exporter
    ```
 
 ## Configuration
@@ -97,7 +159,7 @@ Once the API Exporter is running, you can scrape the metrics by accessing the `/
 To measure the response time for a specific API endpoint, use the following curl command:
 
 ```bash
-curl "http://localhost:9105/metrics?target=https://api.example.com |grep api"
+curl "http://localhost:9105/metrics?target=https://api.example.com | grep api"
 ```
 
 ### Metrics Format
@@ -159,10 +221,13 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 ## Uninstallation
 
-To uninstall the API Exporter, run the following command from the root of the cloned repository:
+To uninstall the API Exporter, you can use the provided uninstall script. This script will stop the service, remove the installation directory, and delete the user created for the API Exporter.
 
-```bash
-sudo ./uninstall.sh
-```
+### Uninstall Script
 
-This will remove the API Exporter binary, configuration files, systemd service, and the `api_exporter` user.
+1. **Run the Uninstall Script**:
+   ```bash
+   sudo ./uninstall.sh
+   ```
+
+This will stop and disable the API Exporter service, remove the installation directory, and clean up any associated files.
