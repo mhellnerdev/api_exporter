@@ -37,21 +37,12 @@ else
     exit 1
 fi
 
-# Fetch the latest release download URL
-RESPONSE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
+# Construct the download URL
+LATEST_RELEASE="https://github.com/$REPO/releases/latest/download/$ASSET_NAME"
 
-# Check if the response is empty
-if [[ -z "$RESPONSE" ]]; then
-    echo "Failed to fetch the latest release. Please check the repository and your network connection."
-    exit 1
-fi
-
-# Extract the download URL using jq
-LATEST_RELEASE=$(echo "$RESPONSE" | jq -r ".assets[] | select(.name | contains(\"$ASSET_NAME\")) | .browser_download_url")
-
-# Check if the URL was found
-if [[ -z "$LATEST_RELEASE" ]]; then
-    echo "Could not find the latest release for $ASSET_NAME"
+# Check if the URL is reachable
+if ! curl --output /dev/null --silent --head --fail "$LATEST_RELEASE"; then
+    echo "Could not find the latest release for $ASSET_NAME at $LATEST_RELEASE"
     exit 1
 fi
 
