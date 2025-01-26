@@ -9,6 +9,7 @@ USER_NAME="api_exporter"           # User to run the service
 RELEASE_TAR="api_exporter_linux_amd64.tar.gz"  # Name of the release tar.gz file
 RELEASE_DIR="./release"            # Path to the release folder
 BINARY_NAME="api_exporter"        # Name of the binary
+TMP_DIR="/tmp/api_exporter_install"  # Temporary directory for unpacking
 
 # Create a user for the API Exporter if it doesn't exist
 if ! id "$USER_NAME" &>/dev/null; then
@@ -25,19 +26,25 @@ fi
 # Create the installation directory
 sudo mkdir -p "$INSTALL_DIR"
 
-# Unpack the tar.gz file into the installation directory
-echo "Unpacking $RELEASE_TAR to $INSTALL_DIR..."
-sudo tar -xzvf "$RELEASE_DIR/$RELEASE_TAR" -C "$INSTALL_DIR"
+# Create a temporary directory for unpacking
+mkdir -p "$TMP_DIR"
+
+# Unpack the tar.gz file into the temporary directory
+echo "Unpacking $RELEASE_TAR to $TMP_DIR..."
+sudo tar -xzvf "$RELEASE_DIR/$RELEASE_TAR" -C "$TMP_DIR"
 
 # Move the binary to the installation directory
-if [ -f "$INSTALL_DIR/api_exporter_linux_amd64/$BINARY_NAME" ]; then
+if [ -f "$TMP_DIR/api_exporter_linux_amd64/$BINARY_NAME" ]; then
     echo "Moving binary to $INSTALL_DIR..."
-    sudo mv "$INSTALL_DIR/api_exporter_linux_amd64/$BINARY_NAME" "$INSTALL_DIR/"
-    sudo rm -r "$INSTALL_DIR/api_exporter_linux_amd64"  # Clean up the unpacked folder
+    sudo mv "$TMP_DIR/api_exporter_linux_amd64/$BINARY_NAME" "$INSTALL_DIR/"
 else
     echo "Error: Binary '$BINARY_NAME' not found in the unpacked release."
     exit 1
 fi
+
+# Clean up the temporary directory
+echo "Cleaning up temporary files..."
+rm -r "$TMP_DIR"
 
 # Create a base configuration file
 cat <<EOL | sudo tee "$CONFIG_FILE"
