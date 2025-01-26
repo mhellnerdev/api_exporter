@@ -2,14 +2,13 @@
 set -e
 
 # Variables
-ASSET_NAME="api_exporter_linux_amd64.tar.gz"  # Name of the tar.gz file
 INSTALL_DIR="/etc/api_exporter"
 CONFIG_FILE="$INSTALL_DIR/api_config.yml"
 SERVICE_FILE="/etc/systemd/system/api_exporter.service"
 USER_NAME="api_exporter"           # User to run the service
-
-# Direct download URL for the asset
-LATEST_RELEASE="https://github.com/mhellnerdev/api_exporter/releases/download/latest/$ASSET_NAME"
+RELEASE_TAR="api_exporter_linux_amd64.tar.gz"  # Name of the release tar.gz file
+RELEASE_DIR="./release"            # Path to the release folder
+BINARY_NAME="api_exporter"        # Name of the binary
 
 # Create a user for the API Exporter if it doesn't exist
 if ! id "$USER_NAME" &>/dev/null; then
@@ -17,23 +16,28 @@ if ! id "$USER_NAME" &>/dev/null; then
     sudo useradd -r -s /bin/false "$USER_NAME"
 fi
 
-# Check if the URL is reachable
-if ! curl --output /dev/null --silent --head --fail "$LATEST_RELEASE"; then
-    echo "Could not find the latest release for $ASSET_NAME at $LATEST_RELEASE"
+# Check if the release tar.gz file exists
+if [ ! -f "$RELEASE_DIR/$RELEASE_TAR" ]; then
+    echo "Error: Release file '$RELEASE_TAR' not found in the '$RELEASE_DIR' folder."
     exit 1
 fi
-
-echo "Downloading $LATEST_RELEASE..."
-curl -L -o "$ASSET_NAME" "$LATEST_RELEASE"
 
 # Create the installation directory
 sudo mkdir -p "$INSTALL_DIR"
 
-# Unpack the tar.gz file
-tar -xzvf "$ASSET_NAME" -C "$INSTALL_DIR"
+# Unpack the tar.gz file into the installation directory
+echo "Unpacking $RELEASE_TAR to $INSTALL_DIR..."
+sudo tar -xzvf "$RELEASE_DIR/$RELEASE_TAR" -C "$INSTALL_DIR"
 
 # Move the binary to the installation directory
-sudo mv "$INSTALL_DIR/api_exporter_linux_amd64/api_exporter" "$INSTALL_DIR/"
+if [ -f "$INSTALL_DIR/api_exporter_linux_amd64/$BINARY_NAME" ]; then
+    echo "Moving binary to $INSTALL_DIR..."
+    sudo mv "$INSTALL_DIR/api_exporter_linux_amd64/$BINARY_NAME" "$INSTALL_DIR/"
+    sudo rm -r "$INSTALL_DIR/api_exporter_linux_amd64"  # Clean up the unpacked folder
+else
+    echo "Error: Binary '$BINARY_NAME' not found in the unpacked release."
+    exit 1
+fi
 
 # Create a base configuration file
 cat <<EOL | sudo tee "$CONFIG_FILE"
@@ -56,7 +60,7 @@ Description=API Exporter
 After=network.target
 
 [Service]
-ExecStart=$INSTALL_DIR/api_exporter --config.api-config=$CONFIG_FILE
+ExecStart=$INSTALL_DIR/$BINARY_NAME --config.api-config=$CONFIG_FILE
 Restart=always
 User=$USER_NAME
 Group=$USER_NAME
@@ -72,4 +76,4 @@ sudo systemctl daemon-reload
 sudo systemctl enable api_exporter
 sudo systemctl start api_exporter
 
-echo "API Exporter installed and started successfully!"
+echo "API Exporter installed and started successfully!" 

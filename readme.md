@@ -19,27 +19,18 @@ You can download the latest release of API Exporter from the [Releases page](htt
 
 ### Installation
 
-1. Download the appropriate binary for your operating system:
-   - For Linux: [api_exporter_linux_amd64](https://github.com/yourusername/api_exporter/releases/latest/download/api_exporter_linux_amd64)
-   - For macOS: [api_exporter_darwin_amd64](https://github.com/yourusername/api_exporter/releases/latest/download/api_exporter_darwin_amd64)
-
-2. Make the binary executable:
-
+1. **Clone the Repository**:
    ```bash
-   chmod +x api_exporter_linux_amd64
+   git clone https://github.com/mhellnerdev/api_exporter.git
+   cd api_exporter
    ```
 
-3. Move the binary to a directory in your PATH:
-
+2. **Run the Install Script**:
    ```bash
-   sudo mv api_exporter_linux_amd64 /usr/local/bin/api_exporter
+   sudo ./install.sh
    ```
 
-4. Run the API Exporter:
-
-   ```bash
-   api_exporter --web.listen-address=0.0.0.0:9105 --config.api-config=/path/to/api_config.yml
-   ```
+This will install the API Exporter from the pre-built release, set up the configuration, and start it as a systemd service.
 
 ## Build and Install
 
