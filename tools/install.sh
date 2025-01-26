@@ -2,43 +2,20 @@
 set -e
 
 # Variables
-REPO="mhellnerdev/api_exporter"  # Your GitHub username and repository
 ASSET_NAME="api_exporter_linux_amd64.tar.gz"  # Name of the tar.gz file
 INSTALL_DIR="/etc/api_exporter"
 CONFIG_FILE="$INSTALL_DIR/api_config.yml"
 SERVICE_FILE="/etc/systemd/system/api_exporter.service"
-OS=$(uname -s | tr '[:upper:]' '[:lower:]')  # Get the OS name
-ARCH=$(uname -m)                   # Get the architecture
 USER_NAME="api_exporter"           # User to run the service
+
+# Direct download URL for the asset
+LATEST_RELEASE="https://github.com/mhellnerdev/api_exporter/releases/download/latest/$ASSET_NAME"
 
 # Create a user for the API Exporter if it doesn't exist
 if ! id "$USER_NAME" &>/dev/null; then
     echo "Creating user $USER_NAME..."
     sudo useradd -r -s /bin/false "$USER_NAME"
 fi
-
-# Determine the appropriate asset name based on OS and architecture
-if [[ "$OS" == "linux" ]]; then
-    if [[ "$ARCH" == "x86_64" ]]; then
-        ASSET_NAME="api_exporter_linux_amd64.tar.gz"
-    else
-        echo "Unsupported architecture: $ARCH"
-        exit 1
-    fi
-elif [[ "$OS" == "darwin" ]]; then
-    if [[ "$ARCH" == "x86_64" ]]; then
-        ASSET_NAME="api_exporter_darwin_amd64.tar.gz"
-    else
-        echo "Unsupported architecture: $ARCH"
-        exit 1
-    fi
-else
-    echo "Unsupported OS: $OS"
-    exit 1
-fi
-
-# Construct the download URL
-LATEST_RELEASE="https://github.com/$REPO/releases/latest/download/$ASSET_NAME"
 
 # Check if the URL is reachable
 if ! curl --output /dev/null --silent --head --fail "$LATEST_RELEASE"; then
