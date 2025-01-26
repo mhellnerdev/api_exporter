@@ -5,6 +5,7 @@ set -e
 GITHUB_URL="https://github.com/mhellnerdev/api_exporter/releases/download/latest/api_exporter_linux_amd64.tar.gz"
 INSTALL_DIR="/usr/local/bin"
 SERVICE_FILE="/etc/systemd/system/api_exporter.service"
+USER_NAME="api_exporter"
 
 # --- helper functions for logs ---
 info() {
@@ -13,6 +14,14 @@ info() {
 fatal() {
     echo '[ERROR] ' "$@" >&2
     exit 1
+}
+
+# --- check if user exists ---
+check_user_exists() {
+    if id "$USER_NAME" &>/dev/null; then
+        info "User '$USER_NAME' already exists. Skipping installation."
+        exit 0
+    fi
 }
 
 # --- download the binary ---
@@ -55,6 +64,7 @@ enable_and_start_service() {
 
 # --- main installation process ---
 {
+    check_user_exists
     download_binary
     install_binary
     create_service_file
