@@ -165,7 +165,7 @@ Once the API Exporter is running, you can scrape the metrics by accessing the `/
 To measure the response time for a specific API endpoint, use the following curl command:
 
 ```bash
-curl "http://localhost:9105/metrics?target=https://api.example.com | grep api"
+curl "http://localhost:9105/metrics?target=https://api1.example.com | grep api"
 ```
 
 ### Metrics Format
@@ -175,8 +175,8 @@ The metrics will be exposed in Prometheus format. You will see metrics like:
 ```
 # HELP api_response_time_milliseconds Latest response time of API calls in milliseconds
 # TYPE api_response_time_milliseconds gauge
-api_response_time_milliseconds{endpoint="https://api.example.com", status="success"} 123
-api_response_time_milliseconds{endpoint="https://api.example.com", status="error 404"} 404
+api_response_time_milliseconds{endpoint="https://api1.example.com", status="success"} 123
+api_response_time_milliseconds{endpoint="https://api1.example.com", status="error 404"} 404
 ```
 
 ## Prometheus Configuration
