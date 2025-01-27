@@ -49,7 +49,6 @@ func measureResponseTime(target string) (float64, int) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", target, nil)
 	if err != nil {
-		log.Printf("Error creating request: %v", err)
 		return 0, 0
 	}
 
@@ -61,7 +60,6 @@ func measureResponseTime(target string) (float64, int) {
 	start := time.Now()
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Printf("Error calling API: %v", err)
 		return 0, 0
 	}
 	defer resp.Body.Close()
