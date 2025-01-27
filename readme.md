@@ -20,7 +20,7 @@ API Exporter is a Go application designed to monitor the response times of API e
 
 ## Features
 
-- Measure response times for multiple API endpoints.
+- Measure response times for multiple API endpoints in (ms).
 - Support for API key authentication via configurable headers.
 - Expose metrics in Prometheus format.
 
@@ -51,7 +51,7 @@ You can download the latest release of API Exporter from the [Releases page](htt
 This will perform the following actions:
 - Create a user named `api_exporter` to run the service.
 - Create the installation directory at `/etc/api_exporter`.
-- Unpack the release tar.gz file into a temporary directory.
+- Unpack the release tar.gz file into /tmp.
 - Move the api_exporter binary to the /usr/local/bin/ directory.
 - Create a default configuration file at `/etc/api_exporter/api_exporter.yml`.
 - Set ownership of the installation directory and configuration file to the `api_exporter` user.
