@@ -110,7 +110,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Define command-line flags
 	listenAddress := flag.String("web.listen-address", ":"+defaultPort, "Address to listen on for web interface and telemetry.")
-	configPath := flag.String("config.api-config", "/etc/api_exporter/api_config.yml", "Path to the API configuration file.")
+	configPath := flag.String("config.api-config", "/etc/api_exporter/api_exporter.yml", "Path to the API configuration file.")
 	flag.Parse()
 
 	// Load API keys from the configuration file
