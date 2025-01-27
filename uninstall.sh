@@ -3,7 +3,7 @@ set -e
 
 # Variables
 INSTALL_DIR="/etc/api_exporter"
-CONFIG_FILE="$INSTALL_DIR/api_config.yml"
+CONFIG_FILE="$INSTALL_DIR/api_exporter.yml"
 SERVICE_FILE="/etc/systemd/system/api_exporter.service"
 USER_NAME="api_exporter"           # User to run the service
 

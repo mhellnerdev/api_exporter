@@ -52,8 +52,8 @@ This will perform the following actions:
 - Create a user named `api_exporter` to run the service.
 - Create the installation directory at `/etc/api_exporter`.
 - Unpack the release tar.gz file into a temporary directory.
-- Move the binary to the installation directory.
-- Create a default configuration file at `/etc/api_exporter/api_config.yml`.
+- Move the api_exporter binary to the /usr/local/bin/ directory.
+- Create a default configuration file at `/etc/api_exporter/api_exporter.yml`.
 - Set ownership of the installation directory and configuration file to the `api_exporter` user.
 - Create a systemd service file to manage the API Exporter as a service.
 - Reload systemd to recognize the new service.
@@ -80,15 +80,18 @@ If you prefer to install manually, follow these steps:
    ```
 
 4. **Create the Configuration File**:
-   Create a YAML configuration file (e.g., `api_config.yml`) to specify the API keys and headers for the endpoints you want to monitor. The structure of the YAML file should be as follows:
+   Create a YAML configuration file (`/etc/api_exporter/api_exporter.yml`) to specify the API keys and headers for the endpoints you want to monitor. The structure of the YAML file should be as follows. Examples are shown for different `auth header` use:
    ```yaml
    api_keys:
-     "https://api.example.com":
+     "https://api1.example.com":
        key: "your_api_key"
        header: "x-api-key"
-     "https://another.api.com":
-       key: "another_api_key"
-       header: "x-api-key"
+     "https://api2.example.com":
+       key: "your_api_key"
+       header: "Authorization: Bearer"
+     "https://api3.example.com":
+       key: "your_api_key"
+       header: "X-Auth-Token"
    ```
 
 5. **Create the Systemd Service File**:
@@ -99,7 +102,7 @@ If you prefer to install manually, follow these steps:
    After=network.target
 
    [Service]
-   ExecStart=/usr/local/bin/api_exporter --config.api-config=/path/to/api_config.yml
+   ExecStart=/usr/local/bin/api_exporter --config.api-config=/path/to/api_exporter.yml
    Restart=always
    User=api_exporter
    Group=api_exporter
@@ -123,17 +126,20 @@ If you prefer to install manually, follow these steps:
 
 ### API Configuration File
 
-Create a YAML configuration file (e.g., `api_config.yml`) to specify the API keys and headers for the endpoints you want to monitor. The structure of the YAML file should be as follows:
+Create a YAML configuration file (/etc/api_exporter/api_exporter.yml`) to specify the API keys and headers for the endpoints you want to monitor. The structure of the YAML file should be as follows:
 
-```yaml
-api_keys:
-  "https://api.example.com":
-    key: "your_api_key"
-    header: "x-api-key"
-  "https://another.api.com":
-    key: "another_api_key"
-    header: "x-api-key"
-```
+ ```yaml
+   api_keys:
+     "https://api1.example.com":
+       key: "your_api_key"
+       header: "x-api-key"
+     "https://api2.example.com":
+       key: "your_api_key"
+       header: "Authorization: Bearer"
+     "https://api3.example.com":
+       key: "your_api_key"
+       header: "X-Auth-Token"
+   ```
 
 ### Command-Line Flags
 
@@ -147,7 +153,7 @@ You can start the API Exporter with the following command-line flags:
 To start the API Exporter, run:
 
 ```bash
-./api_exporter --web.listen-address=0.0.0.0:9105 --config.api-config=/path/to/api_config.yml
+./api_exporter --web.listen-address=0.0.0.0:9105 --config.api-config=/path/to/api_exporter.yml
 ```
 
 ## Usage
@@ -184,8 +190,8 @@ scrape_configs:
     scrape_timeout: 10s           # Timeout for scraping
     static_configs:
       - targets: 
-        - "https://api.example.com"
-        - "https://another.api.com"
+        - "https://api1.example.com"
+        - "https://api2.example.com"
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -215,7 +221,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
 ## Acknowledgments
-
+- [Prometheus Exporter Toolkit](https://github.com/prometheus/exporter-toolkit) Prometheus Exporter Toolkit
 - [Prometheus](https://prometheus.io/) for monitoring and alerting.
 - [Go](https://golang.org/) for the programming language.
 

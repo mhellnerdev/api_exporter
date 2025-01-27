@@ -6,7 +6,7 @@ set -e
 
 # Variables
 INSTALL_DIR="/etc/api_exporter"  # Where the magic happens
-CONFIG_FILE="$INSTALL_DIR/api_config.yml"  # Configuration file for API keys
+CONFIG_FILE="$INSTALL_DIR/api_exporter.yml"  # Configuration file for API keys
 SERVICE_FILE="/etc/systemd/system/api_exporter.service"  # Systemd service file
 USER_NAME="api_exporter"  # The user who will run the service
 RELEASE_TAR="api_exporter_linux_amd64.tar.gz"  # The release tar.gz file
@@ -57,12 +57,15 @@ rm -r "$TMP_DIR"
 echo "Creating a default configuration file at $CONFIG_FILE..."
 cat <<EOL | sudo tee "$CONFIG_FILE"
 api_keys:
-  "https://api.example.com":
+  "https://api1.example.com":
     key: "your_api_key"
     header: "x-api-key"
-  "https://another.api.com":
-    key: "another_api_key"
-    header: "x-api-key"
+  "https://api2.example.com":
+    key: "your_api_key"
+    header: "Authorization: Bearer"
+  "https://api3.example.com":
+    key: "your_api_key"
+    header: "X-Auth-Token"
 EOL
 
 # Step 9: Change ownership of the installation directory and config file
