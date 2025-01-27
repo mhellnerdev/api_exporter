@@ -100,4 +100,4 @@ sudo systemctl start api_exporter
 
 # All done!
 echo "API Exporter installed and started successfully!"
-echo "   You're all set to monitor your APIs. Happy exporting!" 
+echo "You're all set to monitor your APIs. Happy exporting!"
